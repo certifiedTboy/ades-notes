@@ -1,11 +1,10 @@
-import { OAuth2Client } from "google-auth-library";
+import axios from "axios";
 import { HttpException } from "../lib/exceptions/http-exception.js";
 import { UserServices } from "../users/user-services.js";
 import { newJwt } from "../lib/jwt.js";
 import eventEmitter from "../helpers/events.js";
 import { AppHelpers } from "../helpers/app-helpers.js";
-import { OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET, GITHUB_OAUTH_CLIENT_ID, GITHUB_OAUTH_SECRET, } from "../lib/constants.js";
-import axios from "axios";
+import { GITHUB_OAUTH_CLIENT_ID, GITHUB_OAUTH_SECRET, } from "../lib/constants.js";
 /**
  * @class AuthServices
  * @description Provides services for handling authentication-related operations such as user login,
@@ -72,21 +71,20 @@ export class AuthServices {
      * @throws {HttpException} if authentication fails, it throws and exception with the actual reason
      */
     static async googleLogin(googleJwtToken) {
-        const oAuth2Client = new OAuth2Client(OAUTH_CLIENT_SECRET);
-        if (!googleJwtToken || !OAUTH_CLIENT_ID)
+        if (!googleJwtToken)
             throw new HttpException(400, "invalid oauth credentials");
-        const result = await oAuth2Client.verifyIdToken({
-            idToken: googleJwtToken,
-            audience: OAUTH_CLIENT_ID,
+        const response = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
+            headers: {
+                Authorization: `Bearer ${googleJwtToken}`,
+            },
         });
-        const payload = result.getPayload();
         const userData = {
-            firstName: payload?.given_name,
-            lastName: payload?.family_name,
-            email: payload?.email,
-            isVerified: payload?.email_verified,
+            firstName: response?.data?.given_name,
+            lastName: response?.data?.family_name,
+            email: response?.data?.email,
+            picture: response?.data?.picture,
             role: "user",
-            picture: payload?.picture,
+            isVerified: response?.data?.email_verified,
         };
         const user = await UserServices.createNewUser(userData);
         const accessToken = newJwt.generateAccessToken({

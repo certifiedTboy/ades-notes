@@ -18,7 +18,7 @@ export class AuthRoutes extends AppRoutesHandler {
      */
     featureRoutes() {
         this.routes.post("/login/google", this.getGoogleLoginValidationRules(), this.checkValidationResult, AuthControllers.loginUserWithGoogle);
-        this.routes.get("/login/github", AuthControllers.loginUserWithGithub);
+        this.routes.get("/login/github", this.getGithubLoginValidationRules(), this.checkValidationResult, AuthControllers.loginUserWithGithub);
     }
     /**
      * @private getGogleLoginValidationRules
@@ -27,5 +27,8 @@ export class AuthRoutes extends AppRoutesHandler {
      */
     getGoogleLoginValidationRules() {
         return [body("token").notEmpty().withMessage("token is required")];
+    }
+    getGithubLoginValidationRules() {
+        return [body("code").notEmpty().withMessage("code is required")];
     }
 }

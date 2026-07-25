@@ -1,16 +1,13 @@
-import { OAuth2Client } from "google-auth-library";
+import axios from "axios";
 import { HttpException } from "../lib/exceptions/http-exception.ts";
 import { UserServices } from "../users/user-services.ts";
 import { newJwt } from "../lib/jwt.ts";
 import eventEmitter from "../helpers/events.ts";
 import { AppHelpers } from "../helpers/app-helpers.ts";
 import {
-  OAUTH_CLIENT_ID,
-  OAUTH_CLIENT_SECRET,
   GITHUB_OAUTH_CLIENT_ID,
   GITHUB_OAUTH_SECRET,
 } from "../lib/constants.ts";
-import axios from "axios";
 
 /**
  * @class AuthServices
@@ -92,25 +89,25 @@ export class AuthServices {
    * @throws {HttpException} if authentication fails, it throws and exception with the actual reason
    */
   public static async googleLogin(googleJwtToken: string) {
-    const oAuth2Client = new OAuth2Client(OAUTH_CLIENT_SECRET);
-
-    if (!googleJwtToken || !OAUTH_CLIENT_ID)
+    if (!googleJwtToken)
       throw new HttpException(400, "invalid oauth credentials");
 
-    const result = await oAuth2Client.verifyIdToken({
-      idToken: googleJwtToken,
-      audience: OAUTH_CLIENT_ID!,
-    });
-
-    const payload = result.getPayload();
+    const response = await axios.get(
+      "https://www.googleapis.com/oauth2/v3/userinfo",
+      {
+        headers: {
+          Authorization: `Bearer ${googleJwtToken}`,
+        },
+      },
+    );
 
     const userData = {
-      firstName: payload?.given_name!,
-      lastName: payload?.family_name!,
-      email: payload?.email!,
-      isVerified: payload?.email_verified!,
+      firstName: response?.data?.given_name,
+      lastName: response?.data?.family_name,
+      email: response?.data?.email,
+      picture: response?.data?.picture,
       role: "user",
-      picture: payload?.picture!,
+      isVerified: response?.data?.email_verified,
     };
 
     const user = await UserServices.createNewUser(userData);
