@@ -67,7 +67,7 @@ export default function SignUpPage() {
     const githubToken = urlParams.get("code");
 
     if (githubToken) {
-      loginWithGithub({ githubToken, acceptTerms });
+      loginWithGithub({ githubToken, acceptTerms: true });
     }
   }, []);
 
