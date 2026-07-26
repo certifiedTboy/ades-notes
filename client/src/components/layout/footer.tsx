@@ -1,3 +1,5 @@
+import { Link } from "wouter";
+
 export default function Footer() {
   return (
     <footer className="border-t mt-12 border-border bg-card">
@@ -6,7 +8,16 @@ export default function Footer() {
           <span className="font-serif font-semibold text-foreground">
             Ade's Notes
           </span>
+
           {/* <span>· A place where I share my thoughtful ideas...</span> */}
+        </div>
+
+        <div className="flex gap-4 text-center text-sm text-muted-foreground">
+          <Link href="/privacy-policy">
+            <span className="text-primary hover:underline font-medium cursor-pointer">
+              Privacy policy
+            </span>
+          </Link>
         </div>
 
         <p>© {new Date().getFullYear()} Ade's Notes</p>

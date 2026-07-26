@@ -96,12 +96,11 @@ Paste muched images. or use markdown syntax.`}
       ) : (
         <div className="mb-8 p-4 bg-muted rounded-xl text-sm text-muted-foreground text-center">
           <Link
-            href="/sign-in"
+            href="/sign-up"
             className="text-primary hover:underline font-medium"
           >
-            Sign in
-          </Link>{" "}
-          to leave a comment
+            Post Commnet
+          </Link>
         </div>
       )}
       {comments.length === 0 ? (

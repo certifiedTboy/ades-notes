@@ -36,3 +36,7 @@ const userSchema = new Schema({
 }, { timestamps: true });
 const User = model("user", userSchema);
 export default User;
+const newLetterSchema = new Schema({
+    email: { type: String, required: true, unique: true },
+});
+export const NewsLetter = model("newsletter", newLetterSchema);

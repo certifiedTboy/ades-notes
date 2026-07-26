@@ -26,12 +26,14 @@ export class AuthRoutes extends AppRoutesHandler {
       AuthControllers.loginUserWithGoogle,
     );
 
-    this.routes.get(
+    this.routes.post(
       "/login/github",
       this.getGithubLoginValidationRules(),
       this.checkValidationResult,
       AuthControllers.loginUserWithGithub,
     );
+
+    this.routes.post("/logout", this.adminGuard, AuthControllers.logoutUser);
   }
 
   /**
@@ -40,10 +42,28 @@ export class AuthRoutes extends AppRoutesHandler {
    * @returns {Array} An array of express-validator middleware.
    */
   private getGoogleLoginValidationRules() {
-    return [body("token").notEmpty().withMessage("token is required")];
+    return [
+      body("token").notEmpty().withMessage("token is required"),
+      body("acceptTerms")
+        .notEmpty()
+        .withMessage("You must agree to the Privacy Policy to continue")
+        .isBoolean()
+        .withMessage("acceptTerms must be a boolean value")
+        .equals("true")
+        .withMessage("You must agree to the Privacy Policy to continue"),
+    ];
   }
 
   private getGithubLoginValidationRules() {
-    return [body("code").notEmpty().withMessage("code is required")];
+    return [
+      body("code").notEmpty().withMessage("code is required"),
+      body("acceptTerms")
+        .notEmpty()
+        .withMessage("You must agree to the Privacy Policy to continue")
+        .isBoolean()
+        .withMessage("acceptTerms must be a boolean value")
+        .equals("true")
+        .withMessage("You must agree to the Privacy Policy to continue"),
+    ];
   }
 }

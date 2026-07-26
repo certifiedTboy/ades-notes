@@ -98,11 +98,11 @@ export default function PostDetailPage() {
           <motion.button
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            onClick={() => navigate("/blog")}
+            onClick={() => navigate("/blogs")}
             className="flex items-center cursor-pointer gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
             data-testid="button-back"
           >
-            <ArrowLeft className="w-4 h-4" /> Back to Blog
+            <ArrowLeft className="w-4 h-4" /> Back to Blogs
           </motion.button>
         </div>
 

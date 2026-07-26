@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { ResponseHandler } from "../lib/response-handler.ts";
 import { UserServices } from "./user-services.ts";
+import { HttpException } from "../lib/exceptions/http-exception.ts";
 
 /**
  * @class UserControllers
@@ -120,6 +121,109 @@ export class UserControllers {
         page,
         limit,
       });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * @static
+   * @async
+   * @method addNewEmailToNewLetters
+   * @description Handles adding a new email to new letters
+   * @param {Request} req - The Express request object.
+   * @param {Response} res - The Express response object.
+   * @param {NextFunction} next - The Express next middleware function.
+   */
+  public static async addNewEmailToNewLetters(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { email } = req.body;
+
+      const result = await UserServices.addEmailToNewLetters(email);
+
+      ResponseHandler.created(res, 201, "email added successfully", result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * @method removeEmailFromNewsLetter
+   * @description Handles removing an email from new letter.
+   * @param {Request} req - The Express request object.
+   * @param {Response} res - The Express response object.
+   * @param {NextFunction} next - The Express next middleware function.
+   */
+  public static async removeEmailFromNewsLetter(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { email } = req.body;
+
+      await UserServices.removeEmailFromNewLetter(email);
+
+      ResponseHandler.ok(res, 200, "email removed successfully", null);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * @static
+   * @async
+   * @method getAllNewsLetterEmails
+   * @description Handles fetching all emails in news letters.
+   * @param {Request} req - The Express request object.
+   * @param {Response} res - The Express response object.
+   * @param {NextFunction} next - The Express next middleware function.
+   */
+  public static async getAllNewsLetterEmails(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const { emails, total } = await UserServices.getAllEmails(limit, page);
+      ResponseHandler.ok(res, 200, "Users fetched successfully", {
+        emails,
+        total,
+        page,
+        limit,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * @method deleteUserAccount
+   * @description handles user account deletion
+   * @param {Request} req - The Express request object.
+   * @param {Response} res - The Express response object.
+   * @param {NextFunction} next - The Express next middleware function.
+   */
+
+  public static async deleteUserAccount(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const email = req?.user?.email;
+
+      if (!email) throw new HttpException(400, "invalid request");
+
+      await UserServices.deleteAccount(email);
+
+      ResponseHandler.ok(res, 200, "user account deleted successfully", null);
     } catch (error) {
       next(error);
     }

@@ -1,9 +1,11 @@
+import mongoose from "mongoose";
 import { HttpException } from "../lib/exceptions/http-exception.ts";
 import {
   S3Client,
   PutObjectCommand,
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
+import eventEmitter from "../helpers/events.ts";
 import {
   AWS_ACCESS_KEY_ID,
   AWS_BUCKET_NAME,
@@ -19,7 +21,6 @@ import Post, {
   type IReaction,
   type IPost,
 } from "./posts-model.ts";
-import mongoose from "mongoose";
 
 export class PostServices {
   private static s3 = new S3Client({
@@ -37,6 +38,7 @@ export class PostServices {
    */
   public static async createPost(postData: Partial<IPost>): Promise<IPost> {
     const slug = postData.title!.toLowerCase().split(" ").join("-");
+
     const existingPost = await Post.findOne({ slug });
     if (existingPost) {
       throw new HttpException(409, "A post with this title already exists.");
@@ -48,6 +50,14 @@ export class PostServices {
     });
 
     await post.save();
+
+    eventEmitter.emitEvent("create-post", {
+      id: `create-post-${post._id}`,
+      delayInMinutes: 0.5,
+      postId: post._id,
+      postData: post,
+    });
+
     return post;
   }
 

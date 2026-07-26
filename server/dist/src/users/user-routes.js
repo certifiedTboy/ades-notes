@@ -21,6 +21,10 @@ export class UserRoutes extends AppRoutesHandler {
         this.routes.patch("/verify", this.getVerifyUserValidationRules(), this.checkValidationResult, UserControllers.verifyUserAccount);
         this.routes.get("/profile", this.authGuard, UserControllers.getCurrentUserProfile);
         this.routes.get("/", this.adminGuard, UserControllers.getAllUsers);
+        this.routes.delete("/delete", this.authGuard, UserControllers.deleteUserAccount);
+        this.routes.post("/news-letters", this.getNewsLettersValidationRules(), this.checkValidationResult, UserControllers.addNewEmailToNewLetters);
+        this.routes.delete("/news-letters", this.getNewsLettersValidationRules(), this.checkValidationResult, UserControllers.removeEmailFromNewsLetter);
+        this.routes.get("/news-letters/all", this.adminGuard, UserControllers.getAllNewsLetterEmails);
     }
     /**
      * @private getCreateUserValidationRules
@@ -69,6 +73,15 @@ export class UserRoutes extends AppRoutesHandler {
                 .withMessage("otp is required")
                 .matches(/^[0-9]{6}$/)
                 .withMessage("Invalid otp"),
+        ];
+    }
+    getNewsLettersValidationRules() {
+        return [
+            body("email")
+                .notEmpty()
+                .withMessage("email is required")
+                .isEmail()
+                .withMessage("invalid email address"),
         ];
     }
 }

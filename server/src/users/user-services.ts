@@ -1,6 +1,6 @@
 import { HttpException } from "../lib/exceptions/http-exception.ts";
 import { type IUser } from "../lib/types.ts";
-import User from "./user.model.ts";
+import User, { type INewsLetters, NewsLetter } from "./user.model.ts";
 import { AppHelpers } from "../helpers/app-helpers.ts";
 import eventEmitter from "../helpers/events.ts";
 
@@ -193,5 +193,109 @@ export class UserServices {
 
     //@ts-ignore
     return { users, total };
+  }
+
+  /**
+   * @static addEmailToNewLetters
+   * @description adds new user email to news letters
+   * @param {string} email email of the user to be added to new letters
+   * @return {Promise<{INewsLetters}>} A promise that resolves to the mongodb document of the newly added email
+   */
+
+  public static async addEmailToNewLetters(
+    email: string,
+  ): Promise<INewsLetters> {
+    const emailExist = await this.checkIfEmailExist(email);
+
+    if (emailExist) {
+      throw new HttpException(409, "email already exist in news letters");
+    }
+
+    const newLetter = await NewsLetter.create({ email });
+    return newLetter;
+  }
+
+  /**
+   * @static getAllUnmutedEmails
+   * @description get all unmuted emails
+   * @return {Promise<INewsLetters[]>}
+   */
+  public static async getAllNewLetterEmails(): Promise<string[]> {
+    const result = await NewsLetter.find();
+
+    return result.map((item) => item.email);
+  }
+
+  public static async getAllEmails(
+    limit: number,
+    page: number,
+  ): Promise<{
+    emails: INewsLetters[];
+    total: number;
+  }> {
+    const emails = await NewsLetter.find()
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip(limit * (page - 1));
+    const total = await NewsLetter.countDocuments();
+
+    return { emails, total };
+  }
+
+  /**
+   * @static removeEmailFromNewLetter
+   * @description removes an email from new letter
+   * @param {string} email
+   * @return {Promise<void>}
+   */
+  static async removeEmailFromNewLetter(email: string): Promise<void> {
+    await NewsLetter.deleteOne({ email });
+  }
+
+  // /**
+  //  * @static toggleMutedStatus
+  //  * @description toggles isMuted status of an email in the news letter
+  //  * @param {string} email
+  //  * @return {Promise<INewsLetters>}
+  //  */
+  // static async toggleMutedStatus(email: string): Promise<INewsLetters> {
+  //   const emailExist = await this.checkIfEmailExist(email);
+
+  //   if (!emailExist) {
+  //     throw new HttpException(404, "email does not exist in new letters");
+  //   }
+
+  //   const updatedEmail = await NewsLetter.findOneAndUpdate(
+  //     { email },
+  //     { isMuted: !emailExist.isMuted },
+  //     { new: true },
+  //   );
+
+  //   if (!updatedEmail) {
+  //     throw new HttpException(500, "something went wrong");
+  //   }
+
+  //   return updatedEmail;
+  // }
+
+  /**
+   * @static checkIfEmailExists
+   * @description checks if email already exist in newletters
+   * @param {string} email
+   * @return {Promise<{INewsLetters}> | null}
+   */
+  private static async checkIfEmailExist(
+    email: string,
+  ): Promise<INewsLetters | null> {
+    return await NewsLetter.findOne({ email });
+  }
+
+  /**
+   * @static deleteAccount
+   * @description deletes user's account
+   * @param {string} email
+   */
+  public static async deleteAccount(email: string): Promise<void> {
+    await User.deleteOne({ email });
   }
 }

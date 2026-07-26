@@ -1,6 +1,8 @@
+import { isValidObjectId } from "mongoose";
 import EventEmitter from "node:events";
 import cron, { type ScheduledTask } from "node-cron";
 import EmailService from "./smtp.ts";
+import type { IPost } from "../posts/posts-model.ts";
 import {
   type IEventData,
   type EventTypes,
@@ -9,7 +11,7 @@ import {
   type IUpdateCommentEvent,
 } from "../lib/types.ts";
 import { PostServices } from "../posts/posts-services.ts";
-import { isValidObjectId } from "mongoose";
+import { UserServices } from "../users/user-services.ts";
 
 /**
  * @class AppEvents
@@ -20,7 +22,7 @@ import { isValidObjectId } from "mongoose";
  */
 export class AppEvents extends EventEmitter {
   /**
-   * @property {string[]} events - A list of all valid event names that can be emitted or listened to within the application.
+   * @property {EventTypes[]} events - A list of all valid event names that can be emitted or listened to within the application.
    * This acts as an allowlist to prevent typos and ensure only defined events are used.
    */
   private readonly events: EventTypes[];
@@ -51,6 +53,8 @@ export class AppEvents extends EventEmitter {
       "update-comment",
       "update-post-view-count",
       "delete-s3-file",
+      "create-post",
+      "news-letter",
     ];
 
     this.initializeListeners();
@@ -207,7 +211,7 @@ export class AppEvents extends EventEmitter {
       case "new-user":
         // Use the EmailService to send a welcome email with the OTP.
         await EmailService.sendEmail(
-          eventData?.email!,
+          [eventData?.email!],
           "Welcome! Verify Your Account",
           "create-account",
           { name: eventData.firstName, otp: eventData.otp },
@@ -217,7 +221,7 @@ export class AppEvents extends EventEmitter {
 
       case "user-verified":
         await EmailService.sendEmail(
-          eventData?.email!,
+          [eventData?.email!],
           "Account Verified!",
           "account-verified",
           { name: eventData.firstName },
@@ -227,7 +231,7 @@ export class AppEvents extends EventEmitter {
 
       case "password-reset":
         await EmailService.sendEmail(
-          eventData?.email!,
+          [eventData?.email!],
           "Password Reset Request",
           "password-reset",
           { name: eventData.firstName, otp: eventData.otp },
@@ -237,12 +241,31 @@ export class AppEvents extends EventEmitter {
 
       case "password-changed":
         await EmailService.sendEmail(
-          eventData?.email!,
+          [eventData?.email!],
           "Your Password Has Been Changed",
           "password-changed",
           { name: eventData.firstName },
         );
         console.log(`Password changed confirmation sent to ${eventData.email}`);
+        break;
+
+      case "create-post":
+        if (eventData.postId && eventData.postData) {
+          const newsLetterEmails = await UserServices.getAllNewLetterEmails();
+
+          if (newsLetterEmails && newsLetterEmails.length > 0) {
+            await EmailService.sendEmail<IPost>(
+              newsLetterEmails,
+              eventData?.postData?.title!,
+              "new-post",
+              eventData.postData.toObject(),
+            );
+
+            console.log(
+              `Post update with ${eventData.postId} sent  via event.`,
+            );
+          }
+        }
         break;
 
       case "update-post":

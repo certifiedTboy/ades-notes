@@ -4,6 +4,11 @@ export const CATEGORIES = [
   { id: 3, name: "Culture", postCount: 0 },
   { id: 4, name: "Business", postCount: 0 },
   { id: 5, name: "Science", postCount: 0 },
+  { id: 6, name: "Health", postCount: 0 },
+  { id: 7, name: "Career", postCount: 0 },
+  { id: 8, name: "Politics", postCount: 0 },
+  { id: 9, name: "Opinion", postCount: 0 },
+  { id: 10, name: "Lifestyle", postCount: 0 },
 ];
 
 export const TAGS = [

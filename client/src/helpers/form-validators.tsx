@@ -57,6 +57,12 @@ export const loginValidationSchema = Yup.object({
   password: Yup.string().required("Password is required"),
 });
 
+export const addEmailToNewsLetterValidationSchema = Yup.object({
+  email: Yup.string()
+    .required("Email is required")
+    .email("Invalid email address"),
+});
+
 export const postSchema = z.object({
   title: z.string().min(1, "Title is required").max(200),
   excerpt: z.string().max(500).optional(),

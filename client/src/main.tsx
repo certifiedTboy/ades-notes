@@ -10,8 +10,8 @@ import App from "./App";
 import "./index.css";
 
 createRoot(document.getElementById("root")!).render(
-  <AuthContextProvider>
-    <Provider store={store}>
+  <Provider store={store}>
+    <AuthContextProvider>
       <PostContextProvider>
         <CommentContextProvider>
           <AdminContextProvider>
@@ -23,6 +23,6 @@ createRoot(document.getElementById("root")!).render(
           </AdminContextProvider>
         </CommentContextProvider>
       </PostContextProvider>
-    </Provider>
-  </AuthContextProvider>,
+    </AuthContextProvider>
+  </Provider>,
 );

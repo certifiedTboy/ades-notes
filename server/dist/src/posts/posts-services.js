@@ -1,9 +1,10 @@
+import mongoose from "mongoose";
 import { HttpException } from "../lib/exceptions/http-exception.js";
 import { S3Client, PutObjectCommand, DeleteObjectCommand, } from "@aws-sdk/client-s3";
+import eventEmitter from "../helpers/events.js";
 import { AWS_ACCESS_KEY_ID, AWS_BUCKET_NAME, AWS_BUCKET_REGION, AWS_SECRET_ACCESS_KEY, } from "../lib/constants.js";
 import { Types } from "mongoose";
 import Post, { Comment, Reaction, } from "./posts-model.js";
-import mongoose from "mongoose";
 export class PostServices {
     static s3 = new S3Client({
         region: AWS_BUCKET_REGION,
@@ -29,6 +30,12 @@ export class PostServices {
             slug,
         });
         await post.save();
+        eventEmitter.emitEvent("create-post", {
+            id: `create-post-${post._id}`,
+            delayInMinutes: 0.5,
+            postId: post._id,
+            postData: post,
+        });
         return post;
     }
     /**

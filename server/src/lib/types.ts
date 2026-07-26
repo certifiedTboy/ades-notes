@@ -35,7 +35,9 @@ export type EventTypes =
   | "update-post"
   | "update-comment"
   | "update-post-view-count"
-  | "delete-s3-file";
+  | "delete-s3-file"
+  | "create-post"
+  | "news-letter";
 
 export interface IJWTPayload {
   id: string;

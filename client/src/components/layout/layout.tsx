@@ -102,6 +102,26 @@ export default function Layout() {
       description:
         "Update your password with the OTP sent to your email address",
     };
+  } else if (location === "/terms-conditions") {
+    metaData = {
+      title: "Ade's Notes | Terms and Conditions",
+      description: "Read the terms and conditions for using Ade's Notes.",
+    };
+  } else if (location === "/privacy-policy") {
+    metaData = {
+      title: "Ade's Notes | Privacy Policy",
+      description: "Read the privacy policy for using Ade's Notes.",
+    };
+  } else if (location === "/remove-email") {
+    metaData = {
+      title: "Ade's Notes | Unsubscribe",
+      description: "Unsubscribe from Ade's Notes newsletter.",
+    };
+  } else if (location === "/account/settings") {
+    metaData = {
+      title: "Ade's Notes | Account Settings",
+      description: "Manage your account settings.",
+    };
   } else {
     metaData = {
       title: "404 - Page Not Found",

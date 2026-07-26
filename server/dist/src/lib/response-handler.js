@@ -28,4 +28,7 @@ export class ResponseHandler {
             .cookie("authToken", data?.accessToken, cookieOptions)
             .json({ message, refreshToken: data?.refreshToken, user: data?.user });
     }
+    static logout(res, statusCode, message, _data) {
+        return res.status(statusCode).clearCookie("authToken").json({ message });
+    }
 }

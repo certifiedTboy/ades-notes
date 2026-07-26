@@ -43,4 +43,13 @@ export class ResponseHandler {
       .cookie("authToken", data?.accessToken, cookieOptions)
       .json({ message, refreshToken: data?.refreshToken, user: data?.user });
   }
+
+  static logout(
+    res: Response,
+    statusCode: number,
+    message: string,
+    _data?: any,
+  ) {
+    return res.status(statusCode).clearCookie("authToken").json({ message });
+  }
 }

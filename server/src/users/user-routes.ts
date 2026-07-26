@@ -39,6 +39,29 @@ export class UserRoutes extends AppRoutesHandler {
     );
 
     this.routes.get("/", this.adminGuard, UserControllers.getAllUsers);
+    this.routes.delete(
+      "/delete",
+      this.authGuard,
+      UserControllers.deleteUserAccount,
+    );
+    this.routes.post(
+      "/news-letters",
+      this.getNewsLettersValidationRules(),
+      this.checkValidationResult,
+      UserControllers.addNewEmailToNewLetters,
+    );
+    this.routes.delete(
+      "/news-letters",
+      this.getNewsLettersValidationRules(),
+      this.checkValidationResult,
+      UserControllers.removeEmailFromNewsLetter,
+    );
+
+    this.routes.get(
+      "/news-letters/all",
+      this.adminGuard,
+      UserControllers.getAllNewsLetterEmails,
+    );
   }
 
   /**
@@ -90,6 +113,16 @@ export class UserRoutes extends AppRoutesHandler {
         .withMessage("otp is required")
         .matches(/^[0-9]{6}$/)
         .withMessage("Invalid otp"),
+    ];
+  }
+
+  private getNewsLettersValidationRules() {
+    return [
+      body("email")
+        .notEmpty()
+        .withMessage("email is required")
+        .isEmail()
+        .withMessage("invalid email address"),
     ];
   }
 }

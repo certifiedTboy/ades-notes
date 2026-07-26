@@ -1,6 +1,6 @@
 import { HttpException } from "../lib/exceptions/http-exception.js";
 import {} from "../lib/types.js";
-import User from "./user.model.js";
+import User, { NewsLetter } from "./user.model.js";
 import { AppHelpers } from "../helpers/app-helpers.js";
 import eventEmitter from "../helpers/events.js";
 /**
@@ -161,5 +161,83 @@ export class UserServices {
         const total = await User.countDocuments();
         //@ts-ignore
         return { users, total };
+    }
+    /**
+     * @static addEmailToNewLetters
+     * @description adds new user email to news letters
+     * @param {string} email email of the user to be added to new letters
+     * @return {Promise<{INewsLetters}>} A promise that resolves to the mongodb document of the newly added email
+     */
+    static async addEmailToNewLetters(email) {
+        const emailExist = await this.checkIfEmailExist(email);
+        if (emailExist) {
+            throw new HttpException(409, "email already exist in news letters");
+        }
+        const newLetter = await NewsLetter.create({ email });
+        return newLetter;
+    }
+    /**
+     * @static getAllUnmutedEmails
+     * @description get all unmuted emails
+     * @return {Promise<INewsLetters[]>}
+     */
+    static async getAllNewLetterEmails() {
+        const result = await NewsLetter.find();
+        return result.map((item) => item.email);
+    }
+    static async getAllEmails(limit, page) {
+        const emails = await NewsLetter.find()
+            .sort({ createdAt: -1 })
+            .limit(limit)
+            .skip(limit * (page - 1));
+        const total = await NewsLetter.countDocuments();
+        return { emails, total };
+    }
+    /**
+     * @static removeEmailFromNewLetter
+     * @description removes an email from new letter
+     * @param {string} email
+     * @return {Promise<void>}
+     */
+    static async removeEmailFromNewLetter(email) {
+        await NewsLetter.deleteOne({ email });
+    }
+    // /**
+    //  * @static toggleMutedStatus
+    //  * @description toggles isMuted status of an email in the news letter
+    //  * @param {string} email
+    //  * @return {Promise<INewsLetters>}
+    //  */
+    // static async toggleMutedStatus(email: string): Promise<INewsLetters> {
+    //   const emailExist = await this.checkIfEmailExist(email);
+    //   if (!emailExist) {
+    //     throw new HttpException(404, "email does not exist in new letters");
+    //   }
+    //   const updatedEmail = await NewsLetter.findOneAndUpdate(
+    //     { email },
+    //     { isMuted: !emailExist.isMuted },
+    //     { new: true },
+    //   );
+    //   if (!updatedEmail) {
+    //     throw new HttpException(500, "something went wrong");
+    //   }
+    //   return updatedEmail;
+    // }
+    /**
+     * @static checkIfEmailExists
+     * @description checks if email already exist in newletters
+     * @param {string} email
+     * @return {Promise<{INewsLetters}> | null}
+     */
+    static async checkIfEmailExist(email) {
+        return await NewsLetter.findOne({ email });
+    }
+    /**
+     * @static deleteAccount
+     * @description deletes user's account
+     * @param {string} email
+     */
+    static async deleteAccount(email) {
+        await User.deleteOne({ email });
     }
 }

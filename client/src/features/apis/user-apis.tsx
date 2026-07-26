@@ -49,6 +49,38 @@ export const userApis = createApi({
         credentials: "include",
       }),
     }),
+
+    addEmailToNewsLetter: builder.mutation({
+      query: (payload) => ({
+        url: "/users/news-letters",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+
+    removeEmailFromNewsLetters: builder.mutation({
+      query: (payload) => ({
+        url: "/users/news-letters",
+        method: "DELETE",
+        body: payload,
+      }),
+    }),
+
+    getAllEmailsInNewsLetters: builder.mutation({
+      query: (payload) => ({
+        url: `/users/news-letters?page=${payload.page}&limit=${payload.limit}`,
+        method: "GET",
+        credentials: "include",
+      }),
+    }),
+
+    deleteUserAccount: builder.mutation({
+      query: () => ({
+        url: "/users/delete",
+        method: "DELETE",
+        credentials: "include",
+      }),
+    }),
   }),
 });
 
@@ -57,4 +89,8 @@ export const {
   useVerifyUserAccountMutation,
   useGetUserProfileMutation,
   useGetAllUsersMutation,
+  useAddEmailToNewsLetterMutation,
+  useRemoveEmailFromNewsLettersMutation,
+  useGetAllEmailsInNewsLettersMutation,
+  useDeleteUserAccountMutation,
 } = userApis;

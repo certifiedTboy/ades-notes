@@ -13,6 +13,10 @@ import SignUpPage from "@/pages/auth/signup-page";
 import AccountVerificationPage from "@/pages/auth/account-verification-page";
 import PasswordResetRequestPage from "@/pages/auth/password-reset-request-page";
 import PasswordUpdatePage from "@/pages/auth/password-update-page";
+import TermsConditionsPage from "@/pages/auth/terms-conditions";
+import PrivacyPolicyPage from "@/pages/auth/privacy-policy";
+import RemoveEmailPage from "@/pages/auth/remove-email";
+import AccountSettingsPage from "@/pages/auth/account-settings";
 import About from "@/pages/about";
 import NotFound from "@/pages/not-found";
 
@@ -36,6 +40,10 @@ export default function Router() {
       <Route path="/account-verification" component={AccountVerificationPage} />
       <Route path="/password-reset" component={PasswordResetRequestPage} />
       <Route path="/password-update" component={PasswordUpdatePage} />
+      <Route path="/terms-conditions" component={TermsConditionsPage} />
+      <Route path="/privacy-policy" component={PrivacyPolicyPage} />
+      <Route path="/unsubcribe" component={RemoveEmailPage} />
+      <Route path="/account/settings" component={AccountSettingsPage} />
       <Route path="/sign-up/:rest*" component={SignUpPage} />
       <Route component={NotFound} />
     </Switch>

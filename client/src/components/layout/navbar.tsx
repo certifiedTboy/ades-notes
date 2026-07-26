@@ -11,6 +11,7 @@ import {
   Shield,
   LogOut,
   LogIn,
+  Settings,
 } from "lucide-react";
 import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/features/context/auth-context";
@@ -27,8 +28,9 @@ export default function Navbar() {
   const { theme, toggle } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [location] = useLocation();
-  const { isAuthenticated, user, checkUserIsAuthenticated } = useAuth();
+  const [location, setLocation] = useLocation();
+  const { isAuthenticated, user, checkUserIsAuthenticated, signOut } =
+    useAuth();
 
   const [getUserProfile, { data, isSuccess }] = useGetUserProfileMutation();
 
@@ -124,6 +126,26 @@ export default function Navbar() {
               </AnimatePresence>
             </button>
 
+            {isAuthenticated && user && user?.role === "user" && (
+              <button
+                onClick={() => setLocation("/account/settings")}
+                className="p-2 rounded-md hover:bg-muted cursor-pointer transition-colors text-muted-foreground hover:text-foreground"
+                aria-label="Toggle theme"
+              >
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={theme}
+                    initial={{ rotate: -90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: 90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Settings className="w-4 h-4" />
+                  </motion.div>
+                </AnimatePresence>
+              </button>
+            )}
+
             {isAuthenticated ? (
               <>
                 {user?.role === "admin" && (
@@ -168,7 +190,7 @@ export default function Navbar() {
                     className="w-8 h-8 rounded-full cursor-pointer"
                   />
                   <button
-                    // onClick={signOut}
+                    onClick={signOut}
                     className="p-2 rounded-md cursor-pointer hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
                     aria-label="Sign out"
                     data-testid="button-sign-out"

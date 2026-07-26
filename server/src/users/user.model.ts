@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, type Model } from "mongoose";
 
 const userSchema = new Schema(
   {
@@ -44,3 +44,16 @@ const userSchema = new Schema(
 const User = model("user", userSchema);
 
 export default User;
+
+export interface INewsLetters extends Document {
+  email: string;
+}
+
+const newLetterSchema = new Schema<INewsLetters>({
+  email: { type: String, required: true, unique: true },
+});
+
+export const NewsLetter: Model<INewsLetters> = model<INewsLetters>(
+  "newsletter",
+  newLetterSchema,
+);

@@ -32,7 +32,7 @@ class EmailService {
                 address: EMAIL_FROM,
                 name: "Ade's Notes",
             };
-            const mailOptions = { from: sender, to: [to], subject, html };
+            const mailOptions = { from: sender, to: [...to], subject, html };
             await this.transporter.sendMail(mailOptions);
         }
         catch (error) {

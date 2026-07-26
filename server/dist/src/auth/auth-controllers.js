@@ -131,4 +131,12 @@ export class AuthControllers {
             next(error);
         }
     }
+    static logoutUser(_req, res, next) {
+        try {
+            ResponseHandler.logout(res, 200, "user logged out successfully");
+        }
+        catch (error) {
+            next(error);
+        }
+    }
 }
