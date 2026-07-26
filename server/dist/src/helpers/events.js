@@ -189,7 +189,7 @@ export class AppEvents extends EventEmitter {
                 if (eventData.postId && eventData.postData) {
                     const newsLetterEmails = await UserServices.getAllNewLetterEmails();
                     if (newsLetterEmails && newsLetterEmails.length > 0) {
-                        await EmailService.sendEmail(newsLetterEmails, eventData?.postData?.title, "new-post", eventData.postData.toObject());
+                        await EmailService.sendBulkEmail(newsLetterEmails, eventData?.postData?.title, "new-post", eventData.postData.toObject());
                         console.log(`Post update with ${eventData.postId} sent  via event.`);
                     }
                 }

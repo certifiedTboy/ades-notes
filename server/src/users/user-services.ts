@@ -220,10 +220,12 @@ export class UserServices {
    * @description get all unmuted emails
    * @return {Promise<INewsLetters[]>}
    */
-  public static async getAllNewLetterEmails(): Promise<string[]> {
+  public static async getAllNewLetterEmails(): Promise<{ email: string }[]> {
     const result = await NewsLetter.find();
 
-    return result.map((item) => item.email);
+    return result.map((item) => {
+      return { email: item.email };
+    });
   }
 
   public static async getAllEmails(

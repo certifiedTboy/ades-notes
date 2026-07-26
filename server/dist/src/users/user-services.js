@@ -183,7 +183,9 @@ export class UserServices {
      */
     static async getAllNewLetterEmails() {
         const result = await NewsLetter.find();
-        return result.map((item) => item.email);
+        return result.map((item) => {
+            return { email: item.email };
+        });
     }
     static async getAllEmails(limit, page) {
         const emails = await NewsLetter.find()

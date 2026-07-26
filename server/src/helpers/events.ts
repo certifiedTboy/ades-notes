@@ -254,7 +254,7 @@ export class AppEvents extends EventEmitter {
           const newsLetterEmails = await UserServices.getAllNewLetterEmails();
 
           if (newsLetterEmails && newsLetterEmails.length > 0) {
-            await EmailService.sendEmail<IPost>(
+            await EmailService.sendBulkEmail<IPost>(
               newsLetterEmails,
               eventData?.postData?.title!,
               "new-post",

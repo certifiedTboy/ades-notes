@@ -1,4 +1,4 @@
-import { body } from "express-validator";
+import { body, query } from "express-validator";
 import { AuthControllers } from "./auth-controllers.js";
 import { AppRoutesHandler } from "../lib/app-routes-middlewares.js";
 /**
@@ -40,7 +40,6 @@ export class AuthRoutes extends AppRoutesHandler {
     }
     getGithubLoginValidationRules() {
         return [
-            body("code").notEmpty().withMessage("code is required"),
             body("acceptTerms")
                 .notEmpty()
                 .withMessage("You must agree to the Privacy Policy to continue")
@@ -48,6 +47,7 @@ export class AuthRoutes extends AppRoutesHandler {
                 .withMessage("acceptTerms must be a boolean value")
                 .equals("true")
                 .withMessage("You must agree to the Privacy Policy to continue"),
+            query("code").notEmpty().withMessage("code is required"),
         ];
     }
 }
