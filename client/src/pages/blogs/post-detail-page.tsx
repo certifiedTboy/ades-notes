@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRoute } from "wouter";
 import { motion } from "framer-motion";
-import { PageMetadata } from "@/components/common/page-metadata";
 import { ArrowLeft, Calendar, Clock, Eye } from "lucide-react";
 import { transform } from "./transform";
 import { Interweave } from "interweave";
@@ -89,20 +88,6 @@ export default function PostDetailPage() {
 
   return (
     <div className="min-h-screen pt-20 pb-20">
-      {post && (
-        <PageMetadata
-          title={`${post.title} | Ade's Notes`}
-          description={post.excerpt || ""}
-          ogType="article"
-          ogImage={post.coverImage}
-          ogUrl={currentUrl}
-          twitterCard="summary_large_image"
-          twitterTitle={post.title}
-          twitterDescription={post.excerpt || ""}
-          twitterImage={post.coverImage}
-        />
-      )}
-
       <ReadingProgress />
       {post?.coverImage && (
         <motion.div

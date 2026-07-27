@@ -32,6 +32,11 @@ export default function Layout() {
       description:
         "Explore a universe of ideas. Browse through a wide range of articles on web development, design, technology, and personal growth. Find your next great read on Ade's Notes.",
     };
+  } else if (location === `/blogs/${params?.slug}`) {
+    metaData = {
+      title: `${params?.slug} | Ade's Notes`,
+      description: `Dive deep into the topic of "${params?.slug}". Discover key insights, detailed explanations, and related discussions on Ade's Notes.`,
+    };
   } else if (location === "/write") {
     metaData = {
       title: "Ade's Notes | Write",
@@ -97,26 +102,6 @@ export default function Layout() {
       description:
         "Update your password with the OTP sent to your email address",
     };
-  } else if (location === "/terms-conditions") {
-    metaData = {
-      title: "Ade's Notes | Terms and Conditions",
-      description: "Read the terms and conditions for using Ade's Notes.",
-    };
-  } else if (location === "/privacy-policy") {
-    metaData = {
-      title: "Ade's Notes | Privacy Policy",
-      description: "Read the privacy policy for using Ade's Notes.",
-    };
-  } else if (location === "/remove-email") {
-    metaData = {
-      title: "Ade's Notes | Unsubscribe",
-      description: "Unsubscribe from Ade's Notes newsletter.",
-    };
-  } else if (location === "/account/settings") {
-    metaData = {
-      title: "Ade's Notes | Account Settings",
-      description: "Manage your account settings.",
-    };
   } else {
     metaData = {
       title: "404 - Page Not Found",
@@ -127,13 +112,7 @@ export default function Layout() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Render metadata only if it's not a blog post detail page */}
-      {!params?.slug && (
-        <PageMetadata
-          title={metaData.title}
-          description={metaData.description}
-        />
-      )}
+      <PageMetadata title={metaData.title} description={metaData.description} />
       <header className="">
         <Navbar />
       </header>
