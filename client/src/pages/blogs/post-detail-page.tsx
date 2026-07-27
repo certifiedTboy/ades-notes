@@ -12,6 +12,7 @@ import CommentsSection from "./comments-section";
 import { usePosts } from "@/features/context/post-context";
 import NotFoundBlog from "./not-found-blog";
 import { useUnsaveContext } from "@/features/context/unsave-context";
+import PostDetailSkeleton from "./post-detail-skeleton";
 import { useGetPostDetailsMutation } from "@/features/apis/post-apis";
 import type { IPost } from "@/lib/types";
 
@@ -27,7 +28,7 @@ export default function PostDetailPage() {
     POSTS.find((p) => p.slug === slug) || null,
   );
 
-  const [getPostDetails, { data, isSuccess, isError, error, isLoading }] =
+  const [getPostDetails, { data, isSuccess, isError, isLoading }] =
     useGetPostDetailsMutation();
 
   const { navigate } = useUnsaveContext();
@@ -61,6 +62,10 @@ export default function PostDetailPage() {
     }
   }, [slug]);
 
+  if (isLoading) {
+    return <PostDetailSkeleton />;
+  }
+
   if (isError && !isLoading) {
     return <NotFoundBlog />;
   }
@@ -76,9 +81,6 @@ export default function PostDetailPage() {
       creditText = credit.replace(urlMatch[0], "").trim();
     }
   }
-
-  console.log(post);
-  console.log("error:", error);
 
   return (
     <div className="min-h-screen pt-20 pb-20">
