@@ -27,7 +27,7 @@ export default function SignUpPage() {
   const [
     loginWithGoogle,
     {
-      isLoading: _googleIsLoading,
+      isLoading: googleIsLoading,
       error: googleError,
       data: googleData,
       isSuccess: googleIsSuccess,
@@ -42,6 +42,7 @@ export default function SignUpPage() {
       isSuccess: githubSuccess,
       isError: githubIsError,
       error: githubError,
+      isLoading: githubIsLoading,
     },
   ] = useLoginWithGithubMutation();
 
@@ -170,9 +171,13 @@ export default function SignUpPage() {
                 }
                 visitGithubConsentScreen();
               }}
+              disabled={githubIsLoading}
             >
               <Github className="mr-2 h-5 w-5" />
-              Continue with Github
+              Continue with Github{" "}
+              {githubIsLoading && (
+                <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              )}
             </Button>
             <Button
               variant="outline"
@@ -194,6 +199,7 @@ export default function SignUpPage() {
             <Button
               variant="outline"
               className="w-full cursor-pointer"
+              disabled={googleIsLoading}
               onClick={() => {
                 if (!acceptTerms) {
                   return toast({
@@ -207,7 +213,10 @@ export default function SignUpPage() {
               }}
             >
               <Google className="mr-2 h-5 w-5" />
-              Continue with Google
+              Continue with Google{" "}
+              {googleIsLoading && (
+                <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              )}
             </Button>
           </div>
 
