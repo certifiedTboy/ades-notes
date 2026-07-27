@@ -9,6 +9,12 @@ import { useAuth } from "@/features/context/auth-context";
 import ReadingProgress from "./reading-progress";
 import ReactionsPanel from "./reaction-panel";
 import CommentsSection from "./comments-section";
+import {
+  FacebookIcon,
+  LinkedinIcon,
+  TwitterIcon,
+  WhatsAppIcon,
+} from "./share-icons";
 import { usePosts } from "@/features/context/post-context";
 import NotFoundBlog from "./not-found-blog";
 import { useUnsaveContext } from "@/features/context/unsave-context";
@@ -36,8 +42,9 @@ export default function PostDetailPage() {
   useEffect(() => {
     if (slug && !post) {
       getPostDetails(slug);
+      viewPostsDetails(slug);
     }
-  }, [slug, post]);
+  }, [slug, post, getPostDetails, viewPostsDetails]);
 
   useEffect(() => {
     if (isSuccess && data) {
@@ -55,12 +62,6 @@ export default function PostDetailPage() {
         : "",
     [post?.content],
   );
-
-  useEffect(() => {
-    if (slug) {
-      viewPostsDetails(slug);
-    }
-  }, [slug]);
 
   if (isLoading) {
     return <PostDetailSkeleton />;
@@ -81,6 +82,9 @@ export default function PostDetailPage() {
       creditText = credit.replace(urlMatch[0], "").trim();
     }
   }
+
+  // Get current URL for sharing, safely handling SSR
+  const currentUrl = typeof window !== "undefined" ? window.location.href : "";
 
   return (
     <div className="min-h-screen pt-20 pb-20">
@@ -225,8 +229,12 @@ export default function PostDetailPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            {/* @ts-ignore */}
-            <Interweave content={renderedContent} transform={transform} />
+            {renderedContent && (
+              <Interweave
+                content={renderedContent as string}
+                transform={transform}
+              />
+            )}
           </motion.div>
         </div>
 
@@ -242,6 +250,56 @@ export default function PostDetailPage() {
               </a>
             ))}
           </div>
+        )}
+
+        {/* Social Share Section */}
+        {post && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="flex items-center gap-4 mt-8 py-4 border-y border-border"
+          >
+            <span className="text-sm font-medium text-muted-foreground">
+              Share this post:
+            </span>
+            <a
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(currentUrl)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Share on X (Twitter)"
+              className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+            >
+              <TwitterIcon className="w-5 h-5" />
+            </a>
+            <a
+              href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Share on Facebook"
+              className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+            >
+              <FacebookIcon className="w-5 h-5" />
+            </a>
+            <a
+              href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(currentUrl)}&title=${encodeURIComponent(post.title)}&summary=${encodeURIComponent(post.excerpt || "")}&source=${encodeURIComponent(window.location.origin)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Share on LinkedIn"
+              className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+            >
+              <LinkedinIcon className="w-5 h-5" />
+            </a>
+            <a
+              href={`https://api.whatsapp.com/send?text=${encodeURIComponent(post.title)}%20${encodeURIComponent(currentUrl)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Share on WhatsApp"
+              className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+            >
+              <WhatsAppIcon className="w-5 h-5" />
+            </a>
+          </motion.div>
         )}
 
         {post && (
