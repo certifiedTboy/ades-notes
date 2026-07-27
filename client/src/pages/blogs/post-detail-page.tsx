@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRoute } from "wouter";
 import { motion } from "framer-motion";
 import { ArrowLeft, Calendar, Clock, Eye } from "lucide-react";
@@ -12,6 +12,8 @@ import CommentsSection from "./comments-section";
 import { usePosts } from "@/features/context/post-context";
 import NotFoundBlog from "./not-found-blog";
 import { useUnsaveContext } from "@/features/context/unsave-context";
+import { useGetPostDetailsMutation } from "@/features/apis/post-apis";
+import type { IPost } from "@/lib/types";
 
 export default function PostDetailPage() {
   const { posts: POSTS, viewPostsDetails } = usePosts();
@@ -19,11 +21,29 @@ export default function PostDetailPage() {
   // const [, navigate] = useLocation();
   const { isAuthenticated: isSignedIn } = useAuth();
 
-  const { navigate } = useUnsaveContext();
-
   const slug = params?.slug ?? "";
 
-  const post = POSTS.find((p) => p.slug === slug);
+  const [post, setPost] = useState<IPost | null>(
+    POSTS.find((p) => p.slug === slug) || null,
+  );
+
+  const [getPostDetails, { data, isSuccess, isError, error, isLoading }] =
+    useGetPostDetailsMutation();
+
+  const { navigate } = useUnsaveContext();
+
+  useEffect(() => {
+    if (slug && !post) {
+      getPostDetails(slug);
+    }
+  }, [slug, post]);
+
+  useEffect(() => {
+    if (isSuccess && data) {
+      setPost(data.data);
+    }
+  }, [isSuccess, data]);
+
   const renderedContent = useMemo(
     () =>
       post?.content
@@ -41,7 +61,7 @@ export default function PostDetailPage() {
     }
   }, [slug]);
 
-  if (!post) {
+  if (isError && !isLoading) {
     return <NotFoundBlog />;
   }
 
@@ -56,6 +76,9 @@ export default function PostDetailPage() {
       creditText = credit.replace(urlMatch[0], "").trim();
     }
   }
+
+  console.log(post);
+  console.log("error:", error);
 
   return (
     <div className="min-h-screen pt-20 pb-20">
@@ -177,11 +200,12 @@ export default function PostDetailPage() {
             <div className="flex items-center gap-4 text-xs text-muted-foreground ml-auto">
               <span className="flex items-center gap-1">
                 <Calendar className="w-3.5 h-3.5" />
-                {new Date(post?.createdAt).toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}
+                {post &&
+                  new Date(post?.createdAt).toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
               </span>
               <span className="flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5" />
@@ -204,7 +228,7 @@ export default function PostDetailPage() {
           </motion.div>
         </div>
 
-        {post?.tags?.length > 0 && (
+        {post && post?.tags?.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-8">
             {post?.tags?.map((tag) => (
               <a
@@ -218,8 +242,10 @@ export default function PostDetailPage() {
           </div>
         )}
 
-        <ReactionsPanel postId={post?._id} userSignedIn={!!isSignedIn} />
-        <CommentsSection postId={post._id} />
+        {post && (
+          <ReactionsPanel postId={post?._id} userSignedIn={!!isSignedIn} />
+        )}
+        {post && <CommentsSection postId={post._id} />}
       </div>
     </div>
   );
