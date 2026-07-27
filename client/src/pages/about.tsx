@@ -59,32 +59,16 @@ export default function About() {
                   connected to the latest trends, breakthroughs, and
                   transformative ideas that shape our lives.
                 </p>
+
                 <p>
-                  Here, we aim to be your go-to destination for all things tech,
-                  offering thought-provoking insights, informative articles, and
-                  engaging discussions that cater to both tech enthusiasts and
-                  casual readers alike.
+                  If you're a tech-savvy professional, an aspiring developer, or
+                  simply someone curious about the impact of technology on our
+                  daily lives, you'll find a wealth of knowledge and inspiration
+                  within these virtual pages.
                 </p>
+
                 <p>
-                  Whether you're a tech-savvy professional, an aspiring
-                  developer, or simply someone curious about the impact of
-                  technology on our daily lives, you'll find a wealth of
-                  knowledge and inspiration within these virtual pages.
-                </p>
-                <p>
-                  Our dedicated team of passionate writers, researchers, and
-                  experts keeps a finger on the pulse of the tech world,
-                  bringing you the most captivating stories, product reviews,
-                  industry updates, and in-depth analyses.
-                </p>
-                <p>
-                  Beyond reporting on the present, we also explore the future of
-                  technology, examining its potential to reshape industries,
-                  empower communities, and solve some of the world's most
-                  pressing challenges.
-                </p>
-                <p>
-                  So, whether you're here to stay informed, gain inspiration, or
+                  And if you're here to stay informed, gain inspiration, or
                   simply geek out with fellow tech enthusiasts, we invite you to
                   join us on this exhilarating adventure.
                 </p>
