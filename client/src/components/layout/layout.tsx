@@ -32,11 +32,6 @@ export default function Layout() {
       description:
         "Explore a universe of ideas. Browse through a wide range of articles on web development, design, technology, and personal growth. Find your next great read on Ade's Notes.",
     };
-  } else if (location === `/blogs/${params?.slug}`) {
-    metaData = {
-      title: `${params?.slug} | Ade's Notes`,
-      description: `Dive deep into the topic of "${params?.slug}". Discover key insights, detailed explanations, and related discussions on Ade's Notes.`,
-    };
   } else if (location === "/write") {
     metaData = {
       title: "Ade's Notes | Write",
@@ -132,7 +127,13 @@ export default function Layout() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <PageMetadata title={metaData.title} description={metaData.description} />
+      {/* Render metadata only if it's not a blog post detail page */}
+      {!params?.slug && (
+        <PageMetadata
+          title={metaData.title}
+          description={metaData.description}
+        />
+      )}
       <header className="">
         <Navbar />
       </header>
