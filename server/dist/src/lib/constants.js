@@ -18,3 +18,4 @@ export const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
 export const GITHUB_OAUTH_CLIENT_ID = process.env.GITHUB_OAUTH_CLIENT_ID;
 export const GITHUB_OAUTH_SECRET = process.env.GITHUB_OAUTH_SECRET;
 export const GITHUB_OAUTH_CALLBACK_URL = process.env.GITHUB_OAUTH_CALLBACK_URL;
+export const AWS_LAMBDA_URL = process.env.AWS_LAMBDA_URL;

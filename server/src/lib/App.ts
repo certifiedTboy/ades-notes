@@ -12,6 +12,25 @@ import { rateLimit } from "express-rate-limit";
 import { notFoundException } from "./exceptions/not-found-exception.ts";
 import { globalExceptionHandler } from "./exceptions/global-exception-handler.ts";
 
+const isVercel = process.env.VERCEL === "1";
+const fileTransports = [
+  new transports.File({
+    filename: "logs/error.log",
+    level: "error",
+  }),
+  new transports.File({ filename: "logs/combined.log" }),
+];
+
+export const logger: Logger = createLogger({
+  level: "info",
+  format: format.json(),
+  transports: isVercel ? [new transports.Console()] : fileTransports,
+
+  exceptionHandlers: isVercel
+    ? [new transports.Console()]
+    : [new transports.File({ filename: "logs/exceptions.log" })],
+});
+
 export abstract class App {
   public app: Application;
   public corsConfig: CorsOptions;
@@ -34,21 +53,8 @@ export abstract class App {
     });
     this.corsConfig = corsConfig;
     this.middlewares();
-    this.logger = createLogger({
-      level: "info",
-      format: format.json(),
-      transports: [
-        new transports.File({
-          filename: "logs/error.log",
-          level: "error",
-        }),
-        new transports.File({ filename: "logs/combined.log" }),
-      ],
-
-      exceptionHandlers: [
-        new transports.File({ filename: "logs/exceptions.log" }),
-      ],
-    });
+    this.logger = logger;
+    this.app.locals.logger = this.logger;
 
     // if (process.env.NODE_ENV !== "production") {
     //   this.logger.add(

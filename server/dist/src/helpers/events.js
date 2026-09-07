@@ -2,9 +2,11 @@ import { isValidObjectId } from "mongoose";
 import EventEmitter from "node:events";
 import cron, {} from "node-cron";
 import EmailService from "./smtp.js";
+// import type { IPost } from "../posts/posts-model.ts";
 import {} from "../lib/types.js";
 import { PostServices } from "../posts/posts-services.js";
 import { UserServices } from "../users/user-services.js";
+import { logger } from "../lib/App.js";
 /**
  * @class AppEvents
  * @extends EventEmitter
@@ -170,27 +172,57 @@ export class AppEvents extends EventEmitter {
         switch (name) {
             case "new-user":
                 // Use the EmailService to send a welcome email with the OTP.
-                await EmailService.sendEmail([eventData?.email], "Welcome! Verify Your Account", "create-account", { name: eventData.firstName, otp: eventData.otp });
-                console.log(`Verification email sent to ${eventData.email}`);
+                // await EmailService.sendEmail(
+                //   [eventData?.email!],
+                //   "Welcome! Verify Your Account",
+                //   "create-account",
+                //   { name: eventData.firstName, otp: eventData.otp },
+                // );
+                await EmailService.sendEmailWithLambda(eventData?.email, "Welcome! Verify Your Account", "create-account", "single", { name: eventData.firstName, otp: eventData.otp });
+                logger.info(`Verification email sent to ${eventData.email}`);
                 break;
             case "user-verified":
-                await EmailService.sendEmail([eventData?.email], "Account Verified!", "account-verified", { name: eventData.firstName });
-                console.log(`Verification email sent to ${eventData.email}`);
+                // await EmailService.sendEmail(
+                //   [eventData?.email!],
+                //   "Account Verified!",
+                //   "account-verified",
+                //   { name: eventData.firstName },
+                // );
+                await EmailService.sendEmailWithLambda(eventData?.email, "Account Verified", "account-verified", "single", { name: eventData.firstName });
+                logger.info(`Verification email sent to ${eventData.email}`);
                 break;
             case "password-reset":
-                await EmailService.sendEmail([eventData?.email], "Password Reset Request", "password-reset", { name: eventData.firstName, otp: eventData.otp });
-                console.log(`Password reset email sent to ${eventData.email}`);
+                // await EmailService.sendEmail(
+                //   [eventData?.email!],
+                //   "Password Reset Request",
+                //   "password-reset",
+                //   { name: eventData.firstName, otp: eventData.otp },
+                // );
+                await EmailService.sendEmailWithLambda(eventData?.email, "Password Reset Request", "password-reset", "single", { name: eventData.firstName, otp: eventData.otp });
+                logger.info(`Password reset email sent to ${eventData.email}`);
                 break;
             case "password-changed":
-                await EmailService.sendEmail([eventData?.email], "Your Password Has Been Changed", "password-changed", { name: eventData.firstName });
-                console.log(`Password changed confirmation sent to ${eventData.email}`);
+                // await EmailService.sendEmail(
+                //   [eventData?.email!],
+                //   "Your Password Has Been Changed",
+                //   "password-changed",
+                //   { name: eventData.firstName },
+                // );
+                await EmailService.sendEmailWithLambda(eventData?.email, "Your Password Has Been Changed", "password-changed", "single", { name: eventData.firstName });
+                logger.info(`Password changed confirmation sent to ${eventData.email}`);
                 break;
             case "create-post":
                 if (eventData.postId && eventData.postData) {
                     const newsLetterEmails = await UserServices.getAllNewLetterEmails();
                     if (newsLetterEmails && newsLetterEmails.length > 0) {
-                        await EmailService.sendBulkEmail(newsLetterEmails, eventData?.postData?.title, "new-post", eventData.postData.toObject());
-                        console.log(`Post update with ${eventData.postId} sent  via event.`);
+                        // await EmailService.sendBulkEmail<IPost>(
+                        //   newsLetterEmails,
+                        //   eventData?.postData?.title!,
+                        //   "new-post",
+                        //   eventData.postData.toObject(),
+                        // );
+                        await EmailService.sendEmailWithLambda(newsLetterEmails, eventData?.postData?.title, "new-post", "bulky", eventData.postData.toObject());
+                        logger.info(`Post update with ${eventData.postId} sent  via event.`);
                     }
                 }
                 break;

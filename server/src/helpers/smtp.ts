@@ -3,7 +3,9 @@ import { MailtrapTransport, MailtrapClient } from "mailtrap";
 import ejs from "ejs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { SMTP_API_KEY, EMAIL_FROM } from "../lib/constants.ts";
+import { SMTP_API_KEY, EMAIL_FROM, AWS_LAMBDA_URL } from "../lib/constants.ts";
+import axios from "axios";
+import { logger } from "../lib/App.ts";
 
 /**
  * @class EmailService
@@ -98,6 +100,48 @@ class EmailService {
     } catch (error) {
       console.error("Error sending email:", error);
       throw new Error("Could not send email.");
+    }
+  }
+
+  /**
+   * Sends an email through aws lambda.
+   * @param to - The recipient's email address.
+   * @param subject - The subject of the email.
+   * @param template - The name of the EJS template file (without the .ejs extension).
+   * @param data - The data to pass to the EJS template.
+   */
+  public async sendEmailWithLambda<T>(
+    to: string | { email: string }[],
+    subject: string,
+    template: string,
+    volume: "single" | "bulky",
+    data: { [key: string]: T },
+  ): Promise<void> {
+    try {
+      if (!AWS_LAMBDA_URL) return console.log("LAMBDA URL is required");
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      const result = await axios.post(
+        AWS_LAMBDA_URL,
+        {
+          to,
+          subject,
+          emailType: template,
+          source: "ades",
+          volume,
+          ...data,
+        },
+        config,
+      );
+
+      logger.info("email sent successfully", result?.data);
+    } catch (error) {
+      logger.error("error sending email with lambda", error);
     }
   }
 }

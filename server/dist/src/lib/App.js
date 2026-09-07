@@ -6,6 +6,22 @@ import { createLogger, format, transports } from "winston";
 import { rateLimit } from "express-rate-limit";
 import { notFoundException } from "./exceptions/not-found-exception.js";
 import { globalExceptionHandler } from "./exceptions/global-exception-handler.js";
+const isVercel = process.env.VERCEL === "1";
+const fileTransports = [
+    new transports.File({
+        filename: "logs/error.log",
+        level: "error",
+    }),
+    new transports.File({ filename: "logs/combined.log" }),
+];
+export const logger = createLogger({
+    level: "info",
+    format: format.json(),
+    transports: isVercel ? [new transports.Console()] : fileTransports,
+    exceptionHandlers: isVercel
+        ? [new transports.Console()]
+        : [new transports.File({ filename: "logs/exceptions.log" })],
+});
 export class App {
     app;
     corsConfig;
@@ -26,20 +42,8 @@ export class App {
         });
         this.corsConfig = corsConfig;
         this.middlewares();
-        this.logger = createLogger({
-            level: "info",
-            format: format.json(),
-            transports: [
-                new transports.File({
-                    filename: "logs/error.log",
-                    level: "error",
-                }),
-                new transports.File({ filename: "logs/combined.log" }),
-            ],
-            exceptionHandlers: [
-                new transports.File({ filename: "logs/exceptions.log" }),
-            ],
-        });
+        this.logger = logger;
+        this.app.locals.logger = this.logger;
         // if (process.env.NODE_ENV !== "production") {
         //   this.logger.add(
         //     new transports.Console({
