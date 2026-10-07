@@ -37,13 +37,40 @@ export class AppRoutesHandler {
      * @param {Response} _res - The Express response object (unused).
      * @param {NextFunction} next - The next middleware function in the stack.
      */
+    // authGuard(req: Request, _res: Response, next: NextFunction) {
+    //   try {
+    //     const authToken = req.cookies["authToken"];
+    //     if (!authToken) {
+    //       throw new HttpException(403, "Unauthorized");
+    //     }
+    //     const payload = newJwt.verifyAccessToken(authToken);
+    //     req.user = payload;
+    //     next();
+    //   } catch (error: unknown) {
+    //     if (error instanceof HttpException) {
+    //       next(new HttpException(403, "Unathorized"));
+    //     }
+    //     if (error instanceof Error) {
+    //       if (error?.message === "invalid signature") {
+    //         next(new HttpException(401, "Unauthorized"));
+    //       }
+    //       if (error?.message === "jwt expired") {
+    //         next(new HttpException(401, "jwt expired"));
+    //       }
+    //     }
+    //   }
+    // }
     authGuard(req, _res, next) {
         try {
-            const authToken = req.cookies["authToken"];
-            if (!authToken) {
+            const headerAuthToken = req?.headers["authorization"];
+            if (!headerAuthToken) {
                 throw new HttpException(403, "Unauthorized");
             }
-            const payload = newJwt.verifyAccessToken(authToken);
+            if (headerAuthToken?.split(" ")[0] !== "Bearer") {
+                throw new HttpException(403, "Invalid auth token");
+            }
+            const token = headerAuthToken.split(" ")[1];
+            const payload = newJwt.verifyAccessToken(token);
             req.user = payload;
             next();
         }

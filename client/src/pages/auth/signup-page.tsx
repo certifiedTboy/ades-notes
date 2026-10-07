@@ -74,7 +74,9 @@ export default function SignUpPage() {
 
   useEffect(() => {
     if (googleIsSuccess) {
+      console.log("Google login successful:", googleData);
       localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("token", googleData?.token);
       checkUserIsAuthenticated({
         ...googleData?.user,
         name: `${googleData?.user?.firstName} ${googleData?.user?.lastName}`,
@@ -100,6 +102,7 @@ export default function SignUpPage() {
   useEffect(() => {
     if (githubSuccess) {
       localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("token", githubData?.token);
       checkUserIsAuthenticated({
         ...githubData?.user,
         name: `${githubData?.user?.firstName} ${githubData?.user?.lastName}`,
