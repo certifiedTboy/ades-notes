@@ -139,14 +139,22 @@ export class PostRoutes extends AppRoutesHandler {
 
   private getAddCommentValidationRules() {
     return [
-      body("content").notEmpty().withMessage("Comment content is required"),
+      body("content")
+        .notEmpty()
+        .withMessage("Comment content is required")
+        .isLength({ max: 500 })
+        .withMessage("Comment content cannot exceed 500 characters"),
       body("parentId").optional({ nullable: true }),
     ];
   }
 
   private getUpdateCommentValidationRules() {
     return [
-      body("content").notEmpty().withMessage("Comment content is required"),
+      body("content")
+        .notEmpty()
+        .withMessage("Comment content is required")
+        .isLength({ max: 500 })
+        .withMessage("Comment content cannot exceed 500 characters"),
     ];
   }
 
