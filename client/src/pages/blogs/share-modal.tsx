@@ -55,7 +55,7 @@ function ShareModal({
 
   return (
     <Dialog open={shareOpen} onOpenChange={setShareOpen}>
-      <DialogContent className="sm:max-w-md rounded-2xl">
+      <DialogContent className="w-[calc(100%-2rem)] grid-cols-1 rounded-2xl sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-serif text-xl">
             Pass it along
