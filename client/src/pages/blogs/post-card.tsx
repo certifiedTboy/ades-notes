@@ -39,7 +39,7 @@ export default function PostCard({
       <Link href={`/blogs/${post?.slug}`}>
         <div>
           {post?.coverImage && (
-            <div className="aspect-[3/2] overflow-hidden">
+            <div className="aspect-3/2 overflow-hidden">
               <img
                 src={post?.coverImage}
                 alt={post?.title}
