@@ -122,11 +122,13 @@ export default function PostCard({
         </div>
       </div>
 
-      <ShareModal
-        setShareOpen={setShareOpen}
-        shareOpen={shareOpen}
-        post={post}
-      />
+      {shareOpen && (
+        <ShareModal
+          setShareOpen={setShareOpen}
+          shareOpen={shareOpen}
+          post={post}
+        />
+      )}
     </motion.article>
   );
 }
